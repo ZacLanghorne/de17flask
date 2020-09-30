@@ -29,7 +29,23 @@ def consultant():
 
 @app.route('/client')
 def client():
-    return 'This is the client portal.'
+    client = request.args.get('client_industry')
+    client_details = Client.query.filter_by(industry=client).all()
+    result = client_schema.dump(client_details)
+    return jsonify(result), 200
+
+class Client(db.Model):
+    __tablename__ = 'client'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True)
+    industry = Column(String)
+    head_office = Column(String)
+
+class ClientSchema(ma.Schema):
+    class Meta:
+        fields = ('id','name','industry','head_office')
+
+client_schema = ClientSchema(many=True)
 
 class Cohort(db.Model):
     __tablename__ = 'cohort'
